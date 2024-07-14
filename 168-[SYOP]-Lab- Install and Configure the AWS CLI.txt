@@ -1,0 +1,193 @@
+ #AWS 168-[SYOP]-Lab- Install and Configure the AWS CLI
+
+Check out my GitHub Repository - https://github.com/MFMKURIA/More-AWS-reStart-Labs-for-AWS-Services
+ 
+ Detailed Step-by-Step Guide to AWS CLI Lab
+
+ Lab Overview
+This guide will help you install and configure the AWS Command Line Interface (CLI) on a Red Hat Linux EC2 instance, connect it to your AWS account, and use it to interact with AWS Identity and Access Management (IAM). Each step is broken down in detail, as if preparing for an AWS certification exam.
+
+ Objectives
+1. Install and configure the AWS CLI.
+2. Connect the AWS CLI to an AWS account.
+3. Access IAM using the AWS CLI.
+
+ Task 1: Connect to the Red Hat EC2 Instance via SSH
+
+ For Windows Users:
+1. Download the PPK File:
+   - In the lab interface, choose the Details dropdown menu and then Show.
+   - Download the `labsuser.ppk` file.
+
+2. Copy Public IP:
+   - Copy the Public IP from the lab details and save it in a text editor.
+
+3. Download PuTTY:
+   - If you don’t have PuTTY installed, download it from the official site.
+
+4. Configure PuTTY:
+   - Open `putty.exe`.
+   - In the Session category, enter the Public IP in the Host Name field.
+   - In Connection > SSH > Auth, browse and select the `labsuser.ppk` file.
+   - Go back to Session and click Open.
+
+5. Connect to EC2 Instance:
+   - When prompted, accept the security alert.
+   - Login as `ec2-user`.
+
+ For macOS and Linux Users:
+1. Download the PEM File:
+   - In the lab interface, choose the Details dropdown menu and then Show.
+   - Download the `labsuser.pem` file.
+
+2. Copy Public IP:
+   - Copy the Public IP from the lab details and save it in a text editor.
+
+3. Change Directory and Permissions:
+   - Open a terminal.
+   - Navigate to the directory containing the `labsuser.pem` file:
+     ```bash
+     cd ~/Downloads
+     ```
+   - Change the permissions of the PEM file:
+     ```bash
+     chmod 400 labsuser.pem
+     ```
+
+4. Connect to EC2 Instance:
+   - Use SSH to connect to the instance:
+     ```bash
+     ssh -i labsuser.pem ec2-user@<PublicIP>
+     ```
+   - Enter `yes` when prompted to confirm the connection.
+
+ Task 2: Install the AWS CLI on Red Hat Linux Instance
+1. Download the AWS CLI:
+   ```bash
+   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+   ```
+
+2. Unzip the Installer:
+   ```bash
+   unzip -u awscliv2.zip
+   ```
+
+3. Run the Installer:
+   ```bash
+   sudo ./aws/install
+   ```
+
+4. Verify Installation:
+   ```bash
+   aws --version
+   ```
+
+5. Display Help:
+   ```bash
+   aws help
+   ```
+   - Press `q` to exit the help prompt.
+
+ Task 3: Observe IAM Configuration in the AWS Management Console
+1. Open the IAM Console:
+   - In the AWS Management Console, search for IAM and open it.
+
+2. View IAM User:
+   - Navigate to Users and select `awsstudent`.
+
+3. View Permissions:
+   - In the Permissions tab, click the arrow next to `lab_policy` and view the JSON by clicking the `{}` button.
+
+4. View Access Keys:
+   - In the Security credentials tab, find the access key ID and secret access key for `awsstudent`.
+
+ Task 4: Configure the AWS CLI to Connect to Your AWS Account
+1. Run AWS Configure Command:
+   ```bash
+   aws configure
+   ```
+
+2. Enter Configuration Details:
+   - AWS Access Key ID: Copy and paste the AccessKey from the lab details.
+   - AWS Secret Access Key: Copy and paste the SecretKey from the lab details.
+   - Default region name: Enter `us-west-2`.
+   - Default output format: Enter `json`.
+
+ Task 5: Observe IAM Configuration Using the AWS CLI
+1. List IAM Users:
+   ```bash
+   aws iam list-users
+   ```
+   - This command returns a JSON list of IAM users.
+
+ Activity 1 Challenge: Download the lab_policy Document
+1. List Policies:
+   ```bash
+   aws iam list-policies --scope Local
+   ```
+
+2. Get Policy Version:
+   ```bash
+   aws iam get-policy-version --policy-arn arn:aws:iam::038946776283:policy/lab_policy --version-id v1 > lab_policy.json
+   ```
+
+ Conclusion
+You have successfully installed and configured the AWS CLI, connected it to your AWS account, and accessed IAM using the AWS CLI.
+
+ Potential Exam Questions
+
+ Question 1:
+Q: How do you install the AWS CLI on a Linux instance?
+A:
+1. Download the installation file:
+   ```bash
+   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+   ```
+2. Unzip the installation file:
+   ```bash
+   unzip -u awscliv2.zip
+   ```
+3. Run the installer:
+   ```bash
+   sudo ./aws/install
+   ```
+4. Verify the installation:
+   ```bash
+   aws --version
+   ```
+
+ Question 2:
+Q: How do you configure the AWS CLI with your AWS account credentials?
+A:
+1. Run the AWS configure command:
+   ```bash
+   aws configure
+   ```
+2. Enter the following details when prompted:
+   - AWS Access Key ID
+   - AWS Secret Access Key
+   - Default region name (e.g., `us-west-2`)
+   - Default output format (e.g., `json`)
+
+ Question 3:
+Q: What command would you use to list all IAM users using the AWS CLI?
+A:
+```bash
+aws iam list-users
+```
+
+ Question 4:
+Q: How can you download a specific IAM policy in JSON format using the AWS CLI?
+A:
+1. List the policies:
+   ```bash
+   aws iam list-policies --scope Local
+   ```
+2. Get the policy version:
+   ```bash
+   aws iam get-policy-version --policy-arn <PolicyArn> --version-id <VersionId> > policy.json
+   ```
+
+---
+
+By following this detailed guide and understanding the example questions and answers, you will be well-prepared for your AWS Cloud Practitioner certification exam. Good luck!
