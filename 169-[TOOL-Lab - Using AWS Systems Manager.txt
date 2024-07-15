@@ -1,0 +1,126 @@
+ #AWS 169-[TOOL]-Lab - Using AWS Systems Manager
+
+Check out my GitHub Repository - https://github.com/MFMKURIA/More-AWS-reStart-Labs-for-AWS-Services
+
+ Detailed Step-by-Step Guide for AWS Systems Manager Lab
+
+ Task 1: Generate Inventory Lists for Managed Instances
+
+Objective: Collect OS information, application information, and metadata from EC2 instances.
+
+1. Access Systems Manager:
+    - Open the AWS Management Console.
+    - In the search box, type `Systems Manager` and press Enter.
+
+2. Navigate to Fleet Manager:
+    - In the left navigation pane, under Node Management, select Fleet Manager.
+
+3. Set Up Inventory:
+    - Choose the Account management dropdown list and select Set up inventory.
+    - In the Provide inventory details section:
+        - For Name, enter `Inventory-Association`.
+    - In the Targets section:
+        - For Specify targets by, choose Manually selecting instances.
+        - Select the row for Managed Instance.
+    - Choose Setup Inventory.
+    - A banner message, "Setup inventory request succeeded," should appear.
+
+4. Review Inventory:
+    - Select the Node ID link to navigate to the Node overview.
+    - Go to the Inventory tab to review the installed applications and other inventory details.
+
+Explanation: This task demonstrates how to use AWS Systems Manager to gather and review configuration and software details from your managed instances, ensuring compliance with software policies.
+
+ Task 2: Install a Custom Application using Run Command
+
+Objective: Install a web application on an EC2 instance using AWS Systems Manager Run Command.
+
+1. Access Run Command:
+    - In the Systems Manager console, for Node Management, select Run Command.
+
+2. Choose a Command Document:
+    - Choose Run command.
+    - Use the search icon to locate the appropriate command document.
+    - Select the document for Install Dashboard App.
+
+3. Configure the Command:
+    - Leave the Document version option set to default.
+    - For Target selection, select Choose instances manually.
+    - In the Instances section, select Managed Instance.
+    - In the Output options section, clear Enable an S3 bucket.
+    - Expand the AWS CLI command section to view the command.
+
+4. Run the Command:
+    - Choose Run.
+    - A banner with a Command ID should appear indicating the command was successfully sent.
+    - After 1-2 minutes, the Overall status should change to Success.
+
+5. Validate Installation:
+    - In the Vocareum console, go to the Details dropdown list and choose Show.
+    - Copy the ServerIP value.
+    - Open a new browser tab, paste the IP address, and press Enter to view the installed application.
+
+Explanation: This task illustrates using Run Command to remotely install applications on your instances without needing direct SSH access, enhancing security and efficiency.
+
+ Task 3: Use Parameter Store to Manage Application Settings
+
+Objective: Use Parameter Store to store and manage application configuration data.
+
+1. Access Parameter Store:
+    - In the Systems Manager console, under Application Management, select Parameter Store.
+
+2. Create a Parameter:
+    - Choose Create parameter.
+    - For Name, enter `/dashboard/show-beta-features`.
+    - For Description, enter `Display beta features`.
+    - Leave Tier and Type as default.
+    - For Value, enter `True`.
+    - Choose Create parameter.
+
+3. Verify the Parameter:
+    - Return to the web browser tab with the application and refresh the page.
+    - Observe that additional beta features are now displayed in the application.
+
+Explanation: Parameter Store provides a secure way to manage configuration data and secrets, allowing applications to dynamically retrieve settings without hardcoding values.
+
+ Task 4: Use Session Manager to Access Instances
+
+Objective: Access EC2 instances securely using Session Manager.
+
+1. Access Session Manager:
+    - In the Systems Manager console, under Node Management, select Session Manager.
+
+2. Start a Session:
+    - Choose Start session.
+    - Select Managed Instance.
+    - Choose Start session.
+
+3. Run Commands in the Session:
+    - In the session window, run `ls /var/www/html` to list the application files.
+    - To get region details, run:
+      ```bash
+      AZ=`curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone`
+      export AWS_DEFAULT_REGION=${AZ::-1}
+      ```
+    - To list EC2 instance details, run:
+      ```bash
+      aws ec2 describe-instances
+      ```
+
+Explanation: Session Manager allows secure and auditable instance management without the need for SSH, making it a robust solution for compliance and security.
+
+ Potential Exam Questions and Answers
+
+ Question 1: What is the purpose of AWS Systems Manager Fleet Manager?
+Answer: AWS Systems Manager Fleet Manager is used to collect and manage inventory information from EC2 instances, on-premises servers, and virtual machines. It helps in querying metadata to understand software configurations and ensures instances comply with software policies.
+
+ Question 2: How can you install applications on EC2 instances using AWS Systems Manager?
+Answer: You can install applications on EC2 instances using AWS Systems Manager Run Command. This capability allows you to execute pre-configured or custom command documents on instances, automating tasks such as software installation and configuration without needing direct SSH access.
+
+ Question 3: What are the benefits of using Parameter Store in AWS Systems Manager?
+Answer: Parameter Store in AWS Systems Manager provides secure storage for configuration data and secrets. It allows you to manage data such as passwords and configuration strings, enabling applications to retrieve these values dynamically, enhancing security and flexibility.
+
+ Question 4: How does Session Manager enhance security when accessing EC2 instances?
+Answer: Session Manager enhances security by allowing you to access EC2 instances without opening inbound ports, managing SSH keys, or maintaining bastion hosts. It provides a browser-based shell or CLI access with full audit logging and compliance with security policies.
+
+By thoroughly understanding these tasks and concepts, you'll be well-prepared for your AWS Cloud Computing Certification exam. Good luck!
