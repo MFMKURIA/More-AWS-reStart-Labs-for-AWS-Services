@@ -1,0 +1,258 @@
+ #AWS 170-[SERV]-Lab - Create a Website on S3
+
+Check out my GitHub Repository - https://github.com/MFMKURIA/More-AWS-reStart-Labs-for-AWS-Services
+
+ Detailed Step-by-Step Guide for Creating a Website on S3 Using AWS CLI
+
+ Lab Overview
+In this lab, you'll practice using AWS CLI commands from an Amazon EC2 instance to:
+1. Create an Amazon S3 bucket.
+2. Create a new IAM user with full access to S3.
+3. Upload files to S3 to host a simple website.
+4. Create a script to update the static website.
+
+ Step-by-Step Instructions
+
+ Task 1: Connect to an Amazon Linux EC2 Instance Using SSM
+1. Access AWS Management Console:
+   - Click on Start Lab and wait for "Lab status: ready".
+   - Click AWS to open the AWS Management Console in a new tab (the system logs you in automatically).
+
+2. Connect to EC2 Instance:
+   - In the lab instructions, click Details, then Show.
+   - Copy the `InstanceSessionUrl` value and paste it into a new browser tab.
+   - A console connection will open in your browser window.
+   - Run the following commands to change the user and home directory:
+     ```bash
+     sudo su -l ec2-user
+     pwd
+     ```
+
+ Task 2: Configure the AWS CLI
+1. Configure AWS CLI:
+   - In the SSH terminal, run:
+     ```bash
+     aws configure
+     ```
+   - Enter the following when prompted:
+     - AWS Access Key ID: Copy the value from the lab pane.
+     - AWS Secret Access Key: Copy the value from the lab pane.
+     - Default region name: Enter `us-west-2`.
+     - Default output format: Enter `json`.
+
+ Task 3: Create an S3 Bucket Using AWS CLI
+1. Create S3 Bucket:
+   - Run the following command, replacing `<your-bucket-name>` with a unique name:
+     ```bash
+     aws s3api create-bucket --bucket <your-bucket-name> --region us-west-2 --create-bucket-configuration LocationConstraint=us-west-2
+     ```
+
+2. Verify Bucket Creation:
+   - If successful, you’ll get a JSON response:
+     ```json
+     {
+       "Location": "http://<your-bucket-name>.s3.amazonaws.com/"
+     }
+     ```
+
+ Task 4: Create a New IAM User with Full Access to S3
+1. Create IAM User:
+   - Run:
+     ```bash
+     aws iam create-user --user-name awsS3user
+     ```
+
+2. Create Login Profile for IAM User:
+   - Run:
+     ```bash
+     aws iam create-login-profile --user-name awsS3user --password Training123!
+     ```
+
+3. Log in as New IAM User:
+   - Log out of the current AWS session and log in as `awsS3user` using the account ID and the password `Training123!`.
+
+4. Grant Full S3 Access:
+   - Run:
+     ```bash
+     aws iam list-policies --query "Policies[?contains(PolicyName,'S3')]"
+     ```
+   - Identify the policy that grants full S3 access (e.g., `AmazonS3FullAccess`).
+   - Attach the policy to `awsS3user`:
+     ```bash
+     aws iam attach-user-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess --user-name awsS3user
+     ```
+
+ Task 5: Adjust S3 Bucket Permissions
+1. Update Bucket Permissions:
+   - In the AWS Management Console, navigate to the S3 bucket.
+   - Go to Permissions.
+   - Edit the Block public access (bucket settings) and deselect Block all public access. Save changes.
+   - Under Object Ownership, choose Edit and select ACLs enabled. Save changes.
+
+ Task 6: Extract Files for the Lab
+1. Extract Files:
+   - In the SSH terminal, run:
+     ```bash
+     cd ~/sysops-activity-files
+     tar xvzf static-website-v2.tar.gz
+     cd static-website
+     ls
+     ```
+   - Ensure you see `index.html` and directories `css` and `images`.
+
+ Task 7: Upload Files to S3 Using AWS CLI
+1. Enable Static Website Hosting:
+   - Run:
+     ```bash
+     aws s3 website s3://<your-bucket-name>/ --index-document index.html
+     ```
+
+2. Upload Files:
+   - Run:
+     ```bash
+     aws s3 cp /home/ec2-user/sysops-activity-files/static-website/ s3://<your-bucket-name>/ --recursive --acl public-read
+     ```
+   - Verify files uploaded:
+     ```bash
+     aws s3 ls <your-bucket-name>
+     ```
+
+3. Access Website:
+   - Go to the S3 bucket properties and find the Bucket website endpoint URL. Open it in a new tab to view your website.
+
+ Task 8: Create a Batch File for Updating the Website
+1. Create Update Script:
+   - In the SSH terminal, run:
+     ```bash
+     cd ~
+     touch update-website.sh
+     vi update-website.sh
+     ```
+   - Press `i` to enter edit mode and add:
+     ```bash
+     !/bin/bash
+     aws s3 cp /home/ec2-user/sysops-activity-files/static-website/ s3://<your-bucket-name>/ --recursive --acl public-read
+     ```
+   - Press `Esc`, type `:wq`, and press Enter to save and exit.
+
+2. Make Script Executable:
+   - Run:
+     ```bash
+     chmod +x update-website.sh
+     ```
+
+3. Edit Local HTML File:
+   - Run:
+     ```bash
+     vi sysops-activity-files/static-website/index.html
+     ```
+   - Change `bgcolor` values as specified, then save and exit.
+
+4. Run Update Script:
+   - Run:
+     ```bash
+     ./update-website.sh
+     ```
+
+5. Verify Changes:
+   - Refresh the website URL to see the updates.
+
+ Optional Challenge: Use `aws s3 sync`
+1. Update Script with Sync:
+   - Modify the `update-website.sh` script to use `sync`:
+     ```bash
+     !/bin/bash
+     aws s3 sync /home/ec2-user/sysops-activity-files/static-website/ s3://<your-bucket-name>/ --acl public-read
+     ```
+
+ My Static Portfolio/Resume Hosted on AWS
+
+Check out an example of a static portfolio/resume hosted on an AWS S3 bucket:
+- [CloudFront URL](https://example.cloudfront.net/)
+- [S3 Website URL](http://example.s3-website-us-east-1.amazonaws.com/index.htmlsec7)
+- Domain: `example.com`
+
+To create and deploy this static resume site, the following AWS services and resources were used:
+
+1. Amazon S3 (Simple Storage Service):
+   - Purpose: Store and serve static files (HTML, CSS, JavaScript, images).
+   - Configuration: S3 bucket configured for public access and static website hosting.
+
+2. Amazon CloudFront:
+   - Purpose: Distribute content globally with low latency and high transfer speeds using AWS's CDN.
+   - Configuration: CloudFront distribution pointing to the S3 bucket, with caching and security settings optimized.
+
+3. Amazon Route 53:
+   - Purpose: Manage DNS to route traffic to the CloudFront distribution.
+   - Configuration: DNS records (e.g., A, CNAME) pointing the domain to the CloudFront distribution.
+
+4. AWS Certificate Manager (ACM):
+   - Purpose: Provision and manage SSL/TLS certificates for securing the website with HTTPS.
+   - Configuration: Certificate requested for the domain and associated with the CloudFront distribution for HTTPS.
+
+5. IAM (Identity and Access Management):
+   - Purpose: Manage permissions and roles to control access to AWS resources.
+   - Configuration: IAM roles and policies to grant necessary permissions for accessing S3 buckets, CloudFront, and other resources.
+
+ Configuration Summary
+
+1. Amazon S3:
+   - Bucket Name: `example.com`
+   - Policy: Public read access for website files.
+
+2. Amazon CloudFront:
+   - Distribution ID: `QWERTYUIOPASD`
+   - Origin Domain: `example.s3-website-us-east-1.amazonaws.com`
+   - Path Pattern: `/`
+
+3. Amazon Route 53:
+   - Hosted Zone: `example.com`
+   - DNS Record: CNAME `example.com` -> CloudFront distribution domain.
+
+4. AWS Certificate Manager (ACM):
+   - Certificate: `example.com`
+   - Status: Valid and associated with CloudFront distribution.
+
+5. IAM:
+   - Role Name: `S3CloudFrontAccess`
+   - Policy: Permissions for S3 bucket and CloudFront access.
+
+By correctly setting up these AWS services, you can deploy a secure, scalable, and high-performance static resume site. Make sure to review and follow AWS best practices for security and cost management.
+
+ Potential Exam Questions
+
+ Question 1:
+What command is used to create a new S3 bucket in a specific region?
+- Answer:
+  ```bash
+  aws s3api create-bucket --bucket <bucket-name> --region <region-name> --create-bucket-configuration LocationConstraint=<region-name>
+  ```
+
+ Question 2:
+How do you configure the AWS CLI with your credentials?
+- Answer:
+  ```bash
+  aws configure
+  ```
+  Enter the AWS Access Key ID, Secret Access Key, Default region name, and Default output format when prompted.
+
+ Question 3:
+What is the purpose of the `aws s3 website` command?
+- Answer:
+  The `aws s3 website` command configures the specified bucket for website hosting and sets the index document.
+
+ Question 4:
+How do you attach a policy to an IAM user to grant full access to S3?
+- Answer:
+  ```bash
+  aws iam attach-user-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess --user-name <user-name>
+  ```
+
+ Question 5:
+What is the difference between `aws s3 cp` and `aws s3 sync` commands?
+- Answer:
+  - `aws s3 cp` copies files to S3, and when used with `--recursive`, it copies all files in a directory.
+  - `aws s3 sync` synchronizes files between a local directory and an S3 bucket, uploading only the files that have changed.
+
+ Conclusion
+You've learned how to use AWS CLI to create and manage S3 buckets, configure IAM users, and deploy a static website on S3. By understanding these tasks and practicing them, you'll be well-prepared for your AWS certification exam.

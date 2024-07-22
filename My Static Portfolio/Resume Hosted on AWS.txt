@@ -1,0 +1,60 @@
+ My Static Portfolio/Resume Hosted on AWS
+
+Check out my GitHub Repository - https://github.com/MFMKURIA/More-AWS-reStart-Labs-for-AWS-Services
+
+Check out my static portfolio/resume hosted on an AWS S3 bucket, with the domain registered with Safaricom:
+- [CloudFront URL](https://d2taxcp5hluc5o.cloudfront.net/)
+- [S3 Website URL](http://markfrancismk.sciawareness.com.s3-website-us-east-1.amazonaws.com/index.html#sec7)
+- Domain: `markfrancismk.sciawareness.com`
+
+Check out an example of a static portfolio/resume hosted on an AWS S3 bucket:
+- [CloudFront URL](https://example.cloudfront.net/)
+- [S3 Website URL](http://example.s3-website-us-east-1.amazonaws.com/index.htmlsec7)
+- Domain: `example.com`
+
+To create and deploy this static resume site, the following AWS services and resources were used:
+
+1. Amazon S3 (Simple Storage Service):
+   - Purpose: Store and serve static files (HTML, CSS, JavaScript, images).
+   - Configuration: S3 bucket configured for public access and static website hosting.
+
+2. Amazon CloudFront:
+   - Purpose: Distribute content globally with low latency and high transfer speeds using AWS's CDN.
+   - Configuration: CloudFront distribution pointing to the S3 bucket, with caching and security settings optimized.
+
+3. Amazon Route 53:
+   - Purpose: Manage DNS to route traffic to the CloudFront distribution.
+   - Configuration: DNS records (e.g., A, CNAME) pointing the domain to the CloudFront distribution.
+
+4. AWS Certificate Manager (ACM):
+   - Purpose: Provision and manage SSL/TLS certificates for securing the website with HTTPS.
+   - Configuration: Certificate requested for the domain and associated with the CloudFront distribution for HTTPS.
+
+5. IAM (Identity and Access Management):
+   - Purpose: Manage permissions and roles to control access to AWS resources.
+   - Configuration: IAM roles and policies to grant necessary permissions for accessing S3 buckets, CloudFront, and other resources.
+
+ Configuration Summary
+
+1. Amazon S3:
+   - Bucket Name: `example.com`
+   - Policy: Public read access for website files.
+
+2. Amazon CloudFront:
+   - Distribution ID: `QWERTYUIOPASD`
+   - Origin Domain: `example.s3-website-us-east-1.amazonaws.com`
+   - Path Pattern: `/`
+
+3. Amazon Route 53:
+   - Hosted Zone: `example.com`
+   - DNS Record: CNAME `example.com` -> CloudFront distribution domain.
+
+4. AWS Certificate Manager (ACM):
+   - Certificate: `example.com`
+   - Status: Valid and associated with CloudFront distribution.
+
+5. IAM:
+   - Role Name: `S3CloudFrontAccess`
+   - Policy: Permissions for S3 bucket and CloudFront access.
+
+By correctly setting up these AWS services, you can deploy a secure, scalable, and high-performance static resume site. Make sure to review and follow AWS best practices for security and cost management.
